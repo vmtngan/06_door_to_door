@@ -8,19 +8,19 @@ class Graph(ABC):
         self.total_distance = 0
         self.latitude_list = [node.latitude for node in self.node_list]
         self.longitude_list = [node.longitude for node in self.node_list]
-        self.min_x = min(self.latitude_list)
-        self.max_x = max(self.latitude_list)
-        self.min_y = min(self.longitude_list)
-        self.max_y = max(self.longitude_list)
-        self.div_num = 350
-        self.unit_x = self.unit_y = (self.max_x - self.min_x) / self.div_num
+        self.min_x = min(self.latitude_list) - 1
+        self.max_x = max(self.latitude_list) + 1
+        self.min_y = min(self.longitude_list) - 1
+        self.max_y = max(self.longitude_list) + 1
+        self.div_num = 1.5 * len(node_list) ** 0.5
+        self.unit = (self.max_x - self.min_x) / self.div_num
         self.area_list = self.split_graph()
 
     def split_graph(self):
         area_list = {}
         for node in self.node_list:
-            node.area = (int(node.latitude // self.unit_x),
-                         int(node.longitude // self.unit_y))
+            node.area = (int(node.latitude // self.unit),
+                         int(node.longitude // self.unit))
             if node.area in area_list:
                 area_list[node.area].append(node)
             else:

@@ -2,8 +2,25 @@ from itertools import permutations
 from graph import Graph
 
 
+def get_total_distance(route_list):
+    sum_distance = 0
+    for index, node in enumerate(route_list[:-1]):
+        sum_distance += node.get_distance(route_list[index + 1])
+    return sum_distance
+
+
 class BruteForce(Graph):
     def find_shortest_path(self):
+        if len(self.node_list) > 10:
+            print('Too much cities')
+            exit()
+        start = self.node_list[0]
+        route_list = [perm for perm in permutations(self.node_list)
+                      if perm[0] == start]
+        distance_list = [get_total_distance(item) for item in route_list]
+        min_distance = min(distance_list)
+        self.total_distance += min_distance
+        self.route = route_list[distance_list.index(min_distance)]
         return self.route
 
 
@@ -33,8 +50,8 @@ class NearestNeighbor(Graph):
     def find_neighbor_area(self, current_area, search_range):
         list_of_nodes = []
         for area in self.area_list.keys():
-            if abs(area[0] - current_area[0]) <= search_range and \
-                    abs(area[1] - current_area[1]) <= search_range:
+            if (abs(area[0] - current_area[0]) <= search_range and
+                    abs(area[1] - current_area[1]) <= search_range):
                 list_of_nodes += self.area_list[area]
         return list_of_nodes
 
