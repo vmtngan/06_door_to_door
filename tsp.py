@@ -9,7 +9,7 @@ from algorithms import NearestNeighbor, BruteForce
 def get_arguments():
     """
     Get and parse arguments from terminal.
-    @return: list of arguments.
+    @return: namespace of arguments
     """
     parser = ArgumentParser(description='Finding shortest path.',
                             usage='./tsp.py [filename] [algorithm]')
@@ -21,7 +21,8 @@ def get_arguments():
 
 def read_data_file(filename):
     """
-    Read information from data file and save each line to a list.
+    Read information from data file.
+    Save each line to a list.
     @param filename: file contains data of cities information
     @return: list of each line in the data file
     """
@@ -38,14 +39,17 @@ def create_node_list(data):
     """
     Create a list of nodes taken from each line list.
     @param data: list of each line in the data file
-    @return: list of nodes
+    @return: list of Node objects
     """
     node_list = []
-    for index, line in enumerate(data):
+    for line in data:
+        # A line contains city information with 3 parameters in order:
+        # city name, longitude, latitude
         city_info = line[:-1].split(', ')
+        # Check one line contains all 3 parameters
         if len(city_info) == 3:
             try:
-                node_list.append(Node(*city_info, index))
+                node_list.append(Node(*city_info))
             except (TypeError, ValueError):
                 stderr.write('Invalid file\n')
                 exit(1)
@@ -56,18 +60,25 @@ def create_node_list(data):
 
 
 def main():
+    """
+    Run the main program.
+    """
     # Dictionary contains algorithm classes
-    algorithms = {'1': NearestNeighbor,
-                  '2': BruteForce}
+    algorithms = {'1': NearestNeighbor, '2': BruteForce}
     arguments = get_arguments()
+    # List of each line in the data file
     data = read_data_file(arguments.filename)
+    # Check data is empty
     if data:
-        # Set up a empty TSP map.
+        # Set up a empty TSP map
         tsp_map = None
+        # List of Node objects
         node_list = create_node_list(data)
+        # Initialize Graph and run corresponding algorithm
         if arguments.algo in algorithms:
             tsp_map = algorithms[arguments.algo](node_list)
             tsp_map.find_shortest_path()
+        # Display results to screen
         print('Route:', tsp_map, sep='\n')
         print('Total of distance:', tsp_map.total_distance)
     else:
